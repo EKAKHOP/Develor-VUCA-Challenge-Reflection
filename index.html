@@ -280,15 +280,34 @@
   .pdf-page .pdf-sub{font-size:13px;color:#777;margin-bottom:20px;}
   .pdf-page h3{font-size:14px;color:var(--purple);border-bottom:1px solid #ddd;padding-bottom:3px;margin:16px 0 6px;}
   .pdf-page .pdf-text{font-size:13px;line-height:1.5;}
-  .pdf-bar-row{margin-bottom:8px;}
-  .pdf-bar-track{background:#eee;border-radius:5px;height:16px;overflow:hidden;}
-  .pdf-bar-fill{height:100%;border-radius:5px;}
-  .pdf-tool-block{margin-bottom:14px;}
+  .pdf-section{margin-bottom:22px;}
+  .pdf-icon-circle{width:30px;height:30px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;}
+  .pdf-icon-circle.green{background:var(--green);}
+  .pdf-icon-circle svg{display:block;}
+  .pdf-quad-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+  .pdf-quad-cell{display:flex;align-items:center;gap:8px;width:46%;background:#f7f5f9;border-radius:8px;padding:8px 10px;}
+  .pdf-quad-cell .pdf-icon-circle{width:26px;height:26px;}
+  .pdf-quad-cell .label{font-size:12px;font-weight:bold;}
+  .pdf-quad-cell .score{font-size:11px;color:#777;}
+  .pdf-callout-row{display:flex;gap:10px;margin-top:10px;}
+  .pdf-callout{flex:1;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.45;}
+  .pdf-callout.strong{background:#eef6e1;border:1px solid var(--green);}
+  .pdf-callout.growth{background:#f6f1f9;border:1px solid var(--purple);}
+  .pdf-callout .cap{font-size:10px;font-weight:bold;text-transform:uppercase;color:#777;margin-bottom:3px;}
+  .pdf-part-head{display:flex;align-items:center;gap:8px;margin:18px 0 8px;}
+  .pdf-part-badge{width:22px;height:22px;border-radius:50%;background:var(--purple);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;flex:none;}
+  .pdf-part-title{font-size:13px;font-weight:bold;color:var(--purple);}
+  .pdf-qa{font-size:12px;line-height:1.5;margin-bottom:7px;background:#faf9fb;border-radius:6px;padding:6px 9px;}
+  .pdf-qa .q{color:#888;font-size:10.5px;font-weight:bold;text-transform:uppercase;margin-bottom:2px;}
+  .pdf-step-callout{display:flex;gap:10px;align-items:flex-start;background:#f6f1f9;border-radius:8px;padding:10px 12px;margin-top:8px;}
+  .pdf-step-callout .pdf-icon-circle{margin-top:1px;}
+  .pdf-tool-card{background:#faf9fb;border-radius:9px;padding:12px 14px;margin-bottom:12px;}
+  .pdf-tool-head{display:flex;align-items:center;gap:9px;margin-bottom:6px;}
   .pdf-tool-title{font-size:14px;font-weight:bold;color:var(--purple);}
-  .pdf-tool-sub{font-size:11px;font-weight:bold;color:#888;margin:4px 0 2px;text-transform:uppercase;}
+  .pdf-tool-sub{font-size:10.5px;font-weight:bold;color:#888;margin:7px 0 2px;text-transform:uppercase;}
   .pdf-tool-text{font-size:12px;line-height:1.45;margin-bottom:2px;}
-  .pdf-qa{font-size:12px;line-height:1.5;margin-bottom:6px;}
-  .pdf-qa .q{color:#888;}
+  .pdf-example-box{background:#eef6e1;border-radius:6px;padding:7px 10px;font-size:12px;line-height:1.45;font-style:italic;}
+  .pdf-mistake-box{background:#fdf1ea;border-radius:6px;padding:7px 10px;font-size:12px;line-height:1.45;}
 </style>
 </head>
 <body>
@@ -324,6 +343,22 @@ var QUAD = {
     desc:"პასუხი ორაზროვნებაზე. ცვლილების სწრაფად მიღება, ვითარების რეგულარული ანალიზი და კლიენტზე ფოკუსი."}
 };
 var QUAD_ORDER = ["vision","understanding","clarity","agility"];
+
+var SVG_ICON_ATTRS = 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+var QUAD_ICONS = {
+  vision:'<svg viewBox="0 0 24 24" width="18" height="18" '+SVG_ICON_ATTRS+'><circle cx="12" cy="12" r="9"/><polygon points="14.3,9.7 10.2,10.2 9.7,14.3 13.8,13.8"/></svg>',
+  understanding:'<svg viewBox="0 0 24 24" width="18" height="18" '+SVG_ICON_ATTRS+'><path d="M4 11a6 6 0 0 1 6-6h1a6 6 0 0 1 0 12H8l-4 3 1-4a6 6 0 0 1-1-5z"/></svg>',
+  clarity:'<svg viewBox="0 0 24 24" width="18" height="18" '+SVG_ICON_ATTRS+'><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg>',
+  agility:'<svg viewBox="0 0 24 24" width="18" height="18" '+SVG_ICON_ATTRS+'><path d="M4 12a8 8 0 0 1 13.5-5.7M20 12a8 8 0 0 1-13.5 5.7"/><path d="M17 4v3h-3M7 20v-3h3"/></svg>'
+};
+var TOOL_ICONS = {
+  1:QUAD_ICONS.vision,
+  2:'<svg viewBox="0 0 24 24" width="17" height="17" '+SVG_ICON_ATTRS+'><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.3c0-1.3 1.2-2.3 2.6-2.3 1.6 0 2.7 1 2.4 2.3-.3 1.2-1.6 1.6-2.6 2-1.1.4-2.4.9-2.4 2.3 0 1.3 1.1 2.3 2.6 2.3 1.4 0 2.6-.9 2.7-2.1"/></svg>',
+  3:'<svg viewBox="0 0 24 24" width="17" height="17" '+SVG_ICON_ATTRS+'><path d="M3 10v4h3l6 4V6l-6 4H3z"/><path d="M16 9a4 4 0 0 1 0 6M19 7a7 7 0 0 1 0 10"/></svg>',
+  4:QUAD_ICONS.agility,
+  5:'<svg viewBox="0 0 24 24" width="17" height="17" '+SVG_ICON_ATTRS+'><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+  6:'<svg viewBox="0 0 24 24" width="17" height="17" '+SVG_ICON_ATTRS+'><path d="M4 5h16v10H9l-4 3v-3H4z"/><path d="M9 9.5l1.8 1.8L15 7.5"/></svg>'
+};
 
 var STATEMENTS = [
   {n:1, key:"vision", text:"აქტიურად ვმონაწილეობდი მომავლის მკაფიო სურათის შექმნაში."},
@@ -1060,6 +1095,46 @@ function collectAnswers(){
   ];
 }
 
+/* ---------- PDF radar chart ---------- */
+function radarChartHtml(avgs){
+  var W=300, H=270, cx=150, cy=140, maxR=90;
+  var angles = {vision:-90, understanding:0, clarity:90, agility:180};
+  function pt(deg, r){
+    var rad = deg*Math.PI/180;
+    return {x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad)};
+  }
+  var svg = '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">';
+  [0.33,0.66,1].forEach(function(f){
+    var ptsStr = QUAD_ORDER.map(function(k){ var p=pt(angles[k], maxR*f); return p.x.toFixed(1)+","+p.y.toFixed(1); }).join(" ");
+    svg += '<polygon points="'+ptsStr+'" fill="none" stroke="#ddd" stroke-width="1"/>';
+  });
+  QUAD_ORDER.forEach(function(k){
+    var p = pt(angles[k], maxR);
+    svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+p.x.toFixed(1)+'" y2="'+p.y.toFixed(1)+'" stroke="#ddd" stroke-width="1"/>';
+  });
+  var scorePts = QUAD_ORDER.map(function(k){
+    var v = avgs[k]||0;
+    var p = pt(angles[k], (v/5)*maxR);
+    return p.x.toFixed(1)+","+p.y.toFixed(1);
+  }).join(" ");
+  svg += '<polygon points="'+scorePts+'" fill="#7f529033" stroke="#7f5290" stroke-width="2"/>';
+  QUAD_ORDER.forEach(function(k){
+    var v = avgs[k]||0;
+    var p = pt(angles[k], (v/5)*maxR);
+    svg += '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="3.2" fill="'+QUAD[k].color+'"/>';
+  });
+  svg += '</svg>';
+
+  var labelsHtml = '';
+  QUAD_ORDER.forEach(function(k){
+    var p = pt(angles[k], maxR+26);
+    var v = avgs[k];
+    labelsHtml += '<div style="position:absolute;left:'+p.x.toFixed(1)+'px;top:'+p.y.toFixed(1)+'px;transform:translate(-50%,-50%);font-size:11px;font-weight:bold;color:'+QUAD[k].color+';white-space:nowrap;text-align:center;">'+QUAD[k].label+(v?(' · '+v.toFixed(1)):'')+'</div>';
+  });
+
+  return '<div style="position:relative;width:'+W+'px;height:'+H+'px;margin:4px auto 0;">'+svg+labelsHtml+'</div>';
+}
+
 /* ---------- PDF ---------- */
 function pdfLibsReady(){
   return !!(window.html2canvas && window.jspdf && window.jspdf.jsPDF);
@@ -1088,52 +1163,63 @@ function buildPdfPages(){
   var p1 = qs("#pdfPage1");
   var p2 = qs("#pdfPage2");
 
-  var h = '<h1>ინსტრუმენტების სახელმძღვანელო</h1>';
+  /* ---- page 1: reflection results, first ---- */
+  var h = '<h1>ჩემი თვითრეფლექსია</h1>';
   h += '<div class="pdf-sub">ჩემი მოგზაურობის ჟურნალი · '+formatDateGeorgian()+'</div>';
-  TOOLS.forEach(function(t){
-    h += '<div class="pdf-tool-block"><div class="pdf-tool-title">'+t.title+'</div>';
-    h += '<div class="pdf-tool-sub">რა არის</div><div class="pdf-tool-text">'+t.what+'</div>';
-    h += '<div class="pdf-tool-sub">თეორიული საფუძველი</div><div class="pdf-tool-text">'+t.theory+'</div>';
-    h += '<div class="pdf-tool-sub">როდის გამოვიყენო</div><div class="pdf-tool-text">'+t.when+'</div>';
-    h += '<div class="pdf-tool-sub">როგორ გამოვიყენო</div>';
-    t.how.forEach(function(s,i){ h += '<div class="pdf-tool-text">'+(i+1)+'. '+s+'</div>'; });
-    h += '<div class="pdf-tool-sub">მაგალითი</div><div class="pdf-tool-text">'+t.example+'</div>';
-    h += '<div class="pdf-tool-sub">ხშირი შეცდომა</div><div class="pdf-tool-text">'+t.mistake+'</div>';
-    h += '</div>';
-  });
-  p1.innerHTML = h;
 
-  var h2 = '<h1 style="font-size:22px;">ჩემი თვითრეფლექსია</h1>';
-  h2 += '<div class="pdf-sub">'+formatDateGeorgian()+'</div>';
-
-  h2 += '<h3>თვითშეფასების შედეგი</h3>';
   var avgs = allCompetencyAvgs();
+  h += '<div class="pdf-section"><h3>თვითშეფასების შედეგი</h3>';
+  h += radarChartHtml(avgs);
+  h += '<div class="pdf-quad-grid">';
   QUAD_ORDER.forEach(function(k){
     var v = avgs[k];
-    var pct = v ? (v/5*100) : 0;
-    h2 += '<div class="pdf-bar-row"><div style="font-size:12px;font-weight:bold;color:'+QUAD[k].color+'">'+QUAD[k].label+(v?(" — "+v.toFixed(1)+"/5"):"")+'</div>'+
-      '<div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:'+pct+'%;background:'+QUAD[k].color+'"></div></div></div>';
+    h += '<div class="pdf-quad-cell"><div class="pdf-icon-circle" style="background:'+QUAD[k].color+'">'+QUAD_ICONS[k]+'</div>'+
+      '<div><div class="label" style="color:'+QUAD[k].color+'">'+QUAD[k].label+'</div><div class="score">'+(v?(v.toFixed(1)+" / 5"):"შეუფასებელი")+'</div></div></div>';
   });
+  h += '</div>';
+
   var sg = strongAndGrowth();
   if(sg.strong.length){
-    h2 += '<div class="pdf-text" style="margin-top:6px;"><b>ძლიერი მხარე:</b> '+sg.strong.map(function(k){return QUAD[k].label;}).join(", ")+'</div>';
-    h2 += '<div class="pdf-text"><b>განვითარების ზონა:</b> '+sg.growth.map(function(k){return QUAD[k].label;}).join(", ")+'</div>';
+    h += '<div class="pdf-callout-row">'+
+      '<div class="pdf-callout strong"><div class="cap">ძლიერი მხარე</div>'+sg.strong.map(function(k){return QUAD[k].label;}).join(", ")+'</div>'+
+      '<div class="pdf-callout growth"><div class="cap">განვითარების ზონა</div>'+sg.growth.map(function(k){return QUAD[k].label;}).join(", ")+'</div>'+
+    '</div>';
   }
+  h += '</div>';
 
-  collectAnswers().forEach(function(sec){
-    h2 += '<h3>'+sec.title+'</h3>';
+  collectAnswers().forEach(function(sec, idx){
+    h += '<div class="pdf-section"><div class="pdf-part-head"><div class="pdf-part-badge">'+(idx+1)+'</div><div class="pdf-part-title">'+sec.title.replace(/^ნაწილი \d+:\s*/,"")+'</div></div>';
     sec.items.forEach(function(it){
       if(!it.a) return;
-      h2 += '<div class="pdf-qa"><div class="q">'+escapeHtml(it.q)+'</div><div>'+escapeHtml(it.a)+'</div></div>';
+      h += '<div class="pdf-qa"><div class="q">'+escapeHtml(it.q)+'</div><div>'+escapeHtml(it.a)+'</div></div>';
     });
+    h += '</div>';
   });
 
-  h2 += '<h3>ჩემი ერთი ნაბიჯი</h3>';
   var stepParts = [];
   if(state.p6.change) stepParts.push(trimEndPunct(state.p6.change));
   if(state.p6.situation) stepParts.push(trimEndPunct(state.p6.situation));
-  h2 += '<div class="pdf-text">'+(stepParts.length?(escapeHtml(stepParts.join(" — "))+"."):"—")+(state.p6.tool?(" ["+escapeHtml(state.p6.tool)+"]"):"")+'</div>';
+  h += '<div class="pdf-section"><h3>ჩემი ერთი ნაბიჯი</h3>';
+  h += '<div class="pdf-step-callout"><div class="pdf-icon-circle green">'+QUAD_ICONS.agility+'</div><div class="pdf-text">'+
+    (stepParts.length?(escapeHtml(stepParts.join(" — "))+"."):"—")+(state.p6.tool?(" ["+escapeHtml(state.p6.tool)+"]"):"")+'</div></div>';
+  h += '</div>';
 
+  p1.innerHTML = h;
+
+  /* ---- page 2: tool guide, second ---- */
+  var h2 = '<h1 style="font-size:22px;">ინსტრუმენტების სახელმძღვანელო</h1>';
+  h2 += '<div class="pdf-sub">'+formatDateGeorgian()+'</div>';
+  TOOLS.forEach(function(t){
+    h2 += '<div class="pdf-tool-card"><div class="pdf-tool-head"><div class="pdf-icon-circle">'+TOOL_ICONS[t.id]+'</div><div class="pdf-tool-title">'+t.title+'</div></div>';
+    h2 += '<div class="pdf-tool-sub">რა არის</div><div class="pdf-tool-text">'+t.what+'</div>';
+    h2 += '<div class="pdf-tool-sub">თეორიული საფუძველი</div><div class="pdf-tool-text">'+t.theory+'</div>';
+    h2 += '<div class="pdf-tool-sub">როდის გამოვიყენო</div><div class="pdf-tool-text">'+t.when+'</div>';
+    h2 += '<div class="pdf-tool-sub">როგორ გამოვიყენო</div>';
+    t.how.forEach(function(s,i){ h2 += '<div class="pdf-tool-text step">'+(i+1)+'. '+s+'</div>'; });
+    h2 += '<div class="pdf-tool-sub">მაგალითი</div><div class="pdf-example-box">'+t.example+'</div>';
+    h2 += '<div class="pdf-tool-sub">ხშირი შეცდომა</div><div class="pdf-mistake-box">'+t.mistake+'</div>';
+    h2 += '</div>';
+  });
   p2.innerHTML = h2;
 }
 
