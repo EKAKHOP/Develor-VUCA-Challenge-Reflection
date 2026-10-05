@@ -1223,22 +1223,63 @@ function buildPdfPages(){
   p2.innerHTML = h2;
 }
 
-function renderCanvasToPdf(pdf, canvas, isFirstOverall){
-  var pdfWidthMM = 210, pageHeightMM = 297;
-  var pxPerMM = canvas.width / pdfWidthMM;
-  var pageHeightPx = Math.floor(pageHeightMM * pxPerMM);
-  var totalPages = Math.max(1, Math.ceil(canvas.height / pageHeightPx));
-  for(var i=0;i<totalPages;i++){
-    var sliceHeightPx = Math.min(pageHeightPx, canvas.height - i*pageHeightPx);
+var PDF_MARGIN_MM = 12;
+var PDF_NOSPLIT_SELECTOR = ".pdf-quad-grid, .pdf-callout-row, .pdf-part-head, .pdf-qa, .pdf-step-callout, .pdf-tool-card";
+
+/* Returns cumulative CSS-px y-offsets (relative to pageEl's top) marking the end of
+   each printed page, nudged so a no-split block is never cut across a page break
+   (unless that block alone is taller than one page, in which case it is force-split). */
+function computePageBreaksCss(pageEl, maxPageHeightCss){
+  var pageTop = pageEl.getBoundingClientRect().top;
+  var atoms = pageEl.querySelectorAll(PDF_NOSPLIT_SELECTOR);
+  var zones = [];
+  for(var i=0;i<atoms.length;i++){
+    var r = atoms[i].getBoundingClientRect();
+    zones.push({top:r.top-pageTop, bottom:r.bottom-pageTop});
+  }
+  zones.sort(function(a,b){ return a.top-b.top; });
+  var totalHeight = pageEl.scrollHeight;
+  var breaks = [];
+  var cursor = 0;
+  while(cursor < totalHeight){
+    var candidate = Math.min(cursor + maxPageHeightCss, totalHeight);
+    if(candidate >= totalHeight){ breaks.push(totalHeight); break; }
+    for(var j=0;j<zones.length;j++){
+      var z = zones[j];
+      if(candidate > z.top && candidate < z.bottom && z.top > cursor){
+        candidate = z.top;
+      }
+    }
+    if(candidate <= cursor) candidate = Math.min(cursor + maxPageHeightCss, totalHeight);
+    breaks.push(candidate);
+    cursor = candidate;
+  }
+  while(breaks.length>1 && (breaks[breaks.length-1]-breaks[breaks.length-2]) < 30){
+    breaks.pop();
+  }
+  return breaks;
+}
+
+function renderCanvasToPdf(pdf, canvas, breaksCss, pageElCssHeight, isFirstOverall){
+  var pdfWidthMM = 210;
+  var printableWidthMM = pdfWidthMM - 2*PDF_MARGIN_MM;
+  var pxPerMM = canvas.width / printableWidthMM;
+  var canvasPerCss = canvas.height / pageElCssHeight;
+  var prevCanvasY = 0;
+  for(var i=0;i<breaksCss.length;i++){
+    var breakCanvasY = (i===breaksCss.length-1) ? canvas.height : Math.round(breaksCss[i]*canvasPerCss);
+    var sliceHeightPx = Math.min(breakCanvasY, canvas.height) - prevCanvasY;
+    if(sliceHeightPx<=0) continue;
     var sliceCanvas = document.createElement("canvas");
     sliceCanvas.width = canvas.width;
     sliceCanvas.height = sliceHeightPx;
     var ctx = sliceCanvas.getContext("2d");
-    ctx.drawImage(canvas, 0, i*pageHeightPx, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+    ctx.drawImage(canvas, 0, prevCanvasY, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
     var sliceData = sliceCanvas.toDataURL("image/png");
     var sliceHeightMM = sliceHeightPx / pxPerMM;
     if(!(isFirstOverall && i===0)) pdf.addPage();
-    pdf.addImage(sliceData, "PNG", 0, 0, pdfWidthMM, sliceHeightMM);
+    pdf.addImage(sliceData, "PNG", PDF_MARGIN_MM, PDF_MARGIN_MM, printableWidthMM, sliceHeightMM);
+    prevCanvasY = breakCanvasY;
   }
 }
 
@@ -1248,13 +1289,18 @@ function downloadPdf(){
     buildPdfPages();
     var jsPDF = window.jspdf.jsPDF;
     var pdf = new jsPDF("p","mm","a4");
+    var printableWidthMM = 210 - 2*PDF_MARGIN_MM;
+    var printableHeightMM = 297 - 2*PDF_MARGIN_MM;
     var pages = [qs("#pdfPage1"), qs("#pdfPage2")];
     var chain = Promise.resolve();
     pages.forEach(function(pageEl, idx){
+      var maxPageHeightCss = pageEl.offsetWidth * (printableHeightMM/printableWidthMM);
+      var breaksCss = computePageBreaksCss(pageEl, maxPageHeightCss);
+      var pageElCssHeight = pageEl.scrollHeight;
       chain = chain.then(function(){
         return window.html2canvas(pageEl, {scale:2, backgroundColor:"#ffffff"});
       }).then(function(canvas){
-        renderCanvasToPdf(pdf, canvas, idx===0);
+        renderCanvasToPdf(pdf, canvas, breaksCss, pageElCssHeight, idx===0);
       });
     });
     chain.then(function(){
