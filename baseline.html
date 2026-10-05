@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ჩემი მოგზაურობის ჟურნალი</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#7f5290;
+    --purple-dark:#4e3161;
+    --green:#8dc63f;
+    --orange:#f26522;
+    --grey-light:#efefef;
+    --grey:#cccccc;
+    --ink:#2a2a2a;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:"Century Gothic","Questrial","Noto Sans Georgian",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:#ffffff;
+    color:var(--ink);
+    -webkit-text-size-adjust:100%;
+  }
+  .mtavruli{font-family:"Noto Sans Georgian",sans-serif;letter-spacing:.3px;}
+  #app-root{
+    height:100vh;
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    max-width:480px;
+    margin:0 auto;
+    background:#fff;
+    overflow:hidden;
+  }
+  .topbar{
+    flex:0 0 auto;
+    padding:10px 16px 8px;
+    background:var(--purple);
+  }
+  .topbar.empty{padding:0;}
+  .progress-track{
+    height:8px;
+    background:rgba(255,255,255,.3);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--orange);
+    border-radius:4px;
+    transition:width .2s ease;
+  }
+  .progress-label{
+    margin-top:6px;
+    font-size:13px;
+    color:#fff;
+    display:flex;
+    justify-content:space-between;
+  }
+  .timer-display{font-size:12px;color:rgba(255,255,255,.85);}
+  .timer-display.expired{color:#ffe1b0;font-weight:bold;}
+  main#content{
+    flex:1 1 auto;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding:12px 18px 24px;
+  }
+  .bottombar{
+    flex:0 0 auto;
+    display:flex;
+    gap:10px;
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--grey-light);
+    background:#fff;
+  }
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn{
+    min-height:48px;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:bold;
+    padding:12px 16px;
+  }
+  .btn-primary{
+    background:var(--purple);
+    color:#fff;
+    flex:2;
+  }
+  .btn-primary:disabled{
+    background:var(--grey);
+    color:#888;
+    cursor:not-allowed;
+  }
+  .btn-secondary{
+    background:var(--grey-light);
+    color:var(--ink);
+    flex:1;
+  }
+  .btn-full{flex:1 1 100%;}
+  h1.screen-title{
+    font-size:20px;
+    line-height:1.3;
+    margin:4px 0 4px;
+    color:var(--purple);
+  }
+  p.hint{
+    font-size:14px;
+    color:#666;
+    margin:0 0 14px;
+  }
+  .chip-list{display:flex;flex-direction:column;gap:10px;}
+  .chip{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:var(--grey-light);
+    border:2px solid var(--grey-light);
+    border-radius:12px;
+    padding:13px 16px;
+    font-size:16px;
+    min-height:48px;
+    color:var(--ink);
+  }
+  .chip.selected{
+    background:#f3ecf7;
+    border-color:var(--purple);
+    color:var(--purple);
+    font-weight:bold;
+  }
+  textarea, input[type=text]{
+    width:100%;
+    font-family:inherit;
+    font-size:16px;
+    padding:12px 14px;
+    border:2px solid var(--grey);
+    border-radius:12px;
+    resize:none;
+    overflow:hidden;
+    min-height:48px;
+    color:var(--ink);
+  }
+  textarea:focus,input[type=text]:focus{outline:none;border-color:var(--purple);}
+  label.field-label{
+    display:block;
+    font-size:14px;
+    font-weight:bold;
+    color:#555;
+    margin:14px 0 6px;
+  }
+  .q-block{margin-bottom:20px;}
+  .q-block .field-label{margin-top:0;}
+  .scale-row{display:flex;gap:8px;margin:10px 0 6px;}
+  .scale-btn{
+    flex:1;
+    min-height:52px;
+    border-radius:12px;
+    background:var(--grey-light);
+    font-size:18px;
+    font-weight:bold;
+    color:var(--ink);
+    border:2px solid var(--grey-light);
+  }
+  .scale-btn.selected{
+    background:var(--purple);
+    border-color:var(--purple);
+    color:#fff;
+  }
+  .scale-endlabels{display:flex;justify-content:space-between;font-size:12px;color:#777;margin-bottom:4px;}
+  .competency-block{margin-bottom:24px;padding-bottom:4px;border-bottom:2px solid var(--grey-light);}
+  .competency-head{font-size:16px;font-weight:bold;margin-bottom:2px;}
+  .competency-sub{font-size:13px;color:#777;margin-bottom:6px;}
+  .competency-desc{font-size:14px;color:#555;margin-bottom:10px;line-height:1.4;}
+  .statement-text{font-size:15px;margin:10px 0 2px;line-height:1.4;}
+  .card{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    background:var(--grey-light);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:12px;
+    min-height:64px;
+  }
+  .card-title{font-size:17px;font-weight:bold;color:var(--ink);}
+  .card-sub{font-size:13px;color:#777;margin-top:2px;}
+  .status-pill{
+    font-size:12px;
+    font-weight:bold;
+    padding:5px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .status-not{background:var(--grey);color:#444;}
+  .status-progress{background:var(--orange);color:#fff;}
+  .status-done{background:var(--green);color:#fff;}
+  .home-intro{
+    background:#f3ecf7;
+    border-radius:var(--radius);
+    padding:14px 16px;
+    font-size:14px;
+    color:var(--purple-dark);
+    margin-bottom:18px;
+    line-height:1.5;
+  }
+  .quad-bars{display:flex;flex-direction:column;gap:14px;margin:12px 0;}
+  .quad-bar-row .quad-label{font-size:14px;font-weight:bold;margin-bottom:5px;}
+  .quad-bar-track{background:var(--grey-light);border-radius:8px;height:26px;overflow:hidden;}
+  .quad-bar-fill{height:100%;border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;font-size:12px;font-weight:bold;transition:width .2s;}
+  .strength-box{background:#eef7e0;border:2px solid var(--green);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:14px;}
+  .growth-box{background:#fff6ec;border:2px solid var(--orange);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:14px;}
+  .diagram-placeholder{
+    border:2px dashed var(--grey);border-radius:var(--radius);padding:22px 16px;
+    text-align:center;color:#888;font-size:13px;margin-bottom:16px;background:var(--grey-light);line-height:1.5;
+  }
+  .tool-detail h2{color:var(--purple);font-size:20px;margin:4px 0 14px;}
+  .tool-section-label{font-size:13px;font-weight:bold;color:var(--purple);margin:16px 0 6px;letter-spacing:.3px;}
+  .tool-body-text{font-size:15px;line-height:1.6;color:var(--ink);}
+  .tool-steps{margin:0;padding-left:20px;font-size:15px;line-height:1.6;}
+  .tool-steps li{margin-bottom:6px;}
+  details.theory-details{margin:4px 0 4px;background:var(--grey-light);border-radius:10px;padding:10px 12px;}
+  details.theory-details summary{font-weight:bold;color:var(--purple);cursor:pointer;font-size:14px;}
+  details.theory-details[open] summary{margin-bottom:8px;}
+  .example-box{background:#f3ecf7;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.5;color:var(--purple-dark);margin:6px 0;}
+  .mistake-box{background:#fff6ec;border:1px solid var(--orange);border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.5;color:#8a4a16;margin:6px 0;}
+  .emo-group{margin-bottom:12px;}
+  .emo-group-label{font-size:13px;font-weight:bold;color:#555;margin-bottom:6px;}
+  .emo-chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
+  .emo-chip{padding:7px 12px;border-radius:20px;background:var(--grey-light);border:2px solid var(--grey-light);font-size:13px;color:var(--ink);}
+  .emo-chip.selected{background:var(--purple);border-color:var(--purple);color:#fff;font-weight:bold;}
+  .summary-section{margin-bottom:18px;}
+  .summary-section h3{font-size:14px;color:var(--purple);margin:0 0 6px;border-bottom:2px solid var(--grey-light);padding-bottom:4px;text-transform:uppercase;}
+  .summary-text{font-size:15px;line-height:1.5;color:var(--ink);white-space:pre-wrap;}
+  .summary-empty{font-size:14px;color:#999;font-style:italic;}
+  .qa-item{margin-bottom:10px;}
+  .qa-q{font-size:13px;color:#777;margin-bottom:2px;}
+  .qa-a{font-size:15px;color:var(--ink);white-space:pre-wrap;}
+  .quad-tag{
+    display:inline-block;color:#fff;font-size:12px;font-weight:bold;
+    padding:3px 9px;border-radius:10px;margin:0 4px 6px 0;text-transform:uppercase;
+  }
+  .note-box{
+    background:#fff6ec;border:1px solid var(--orange);color:#8a4a16;
+    border-radius:10px;padding:10px 12px;font-size:13px;margin:10px 0;
+  }
+  .closing-note{background:#f3ecf7;border-radius:10px;padding:14px 16px;font-size:14px;color:var(--purple-dark);line-height:1.5;margin-top:10px;}
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.45);
+    display:flex;align-items:center;justify-content:center;z-index:50;padding:24px;
+  }
+  .modal-box{background:#fff;border-radius:var(--radius);padding:22px 20px;max-width:360px;width:100%;}
+  .modal-box p{font-size:16px;line-height:1.5;margin:0 0 18px;}
+  .modal-actions{display:flex;gap:10px;}
+  .toast{
+    position:fixed;left:50%;bottom:90px;transform:translateX(-50%);
+    background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;
+    font-size:14px;z-index:60;max-width:85%;text-align:center;
+  }
+  .final-btn-stack{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+  .btn-outline{background:#fff;border:2px solid var(--purple);color:var(--purple);}
+  .btn-danger-outline{background:#fff;border:2px solid var(--orange);color:var(--orange);}
+  .pdf-intro{font-size:15px;line-height:1.6;color:var(--ink);margin-bottom:18px;}
+  .pdf-list{font-size:14px;line-height:1.7;color:#555;margin-bottom:18px;padding-left:18px;}
+  .pdf-hidden-container{position:absolute;left:-99999px;top:0;}
+  .pdf-page{width:794px;min-height:1123px;background:#fff;padding:50px 55px;font-family:"Century Gothic","Noto Sans Georgian",sans-serif;color:#222;}
+  .pdf-page h1{color:var(--purple);font-size:24px;margin:0 0 4px;}
+  .pdf-page .pdf-sub{font-size:13px;color:#777;margin-bottom:20px;}
+  .pdf-page h3{font-size:14px;color:var(--purple);border-bottom:1px solid #ddd;padding-bottom:3px;margin:16px 0 6px;}
+  .pdf-page .pdf-text{font-size:13px;line-height:1.5;}
+  .pdf-bar-row{margin-bottom:8px;}
+  .pdf-bar-track{background:#eee;border-radius:5px;height:16px;overflow:hidden;}
+  .pdf-bar-fill{height:100%;border-radius:5px;}
+  .pdf-tool-block{margin-bottom:14px;}
+  .pdf-tool-title{font-size:14px;font-weight:bold;color:var(--purple);}
+  .pdf-tool-sub{font-size:11px;font-weight:bold;color:#888;margin:4px 0 2px;text-transform:uppercase;}
+  .pdf-tool-text{font-size:12px;line-height:1.45;margin-bottom:2px;}
+  .pdf-qa{font-size:12px;line-height:1.5;margin-bottom:6px;}
+  .pdf-qa .q{color:#888;}
+</style>
+</head>
+<body>
+<div id="app-root">
+  <div class="topbar" id="topbar"></div>
+  <main id="content"></main>
+  <div class="bottombar" id="bottombar"></div>
+</div>
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+<div class="pdf-hidden-container" aria-hidden="true">
+  <div class="pdf-page" id="pdfPage1"></div>
+  <div class="pdf-page" id="pdfPage2"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" onerror="window.__pdfLibFailed=true"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" onerror="window.__pdfLibFailed=true"></script>
+
+<script>
+(function(){
+"use strict";
+
+var STORAGE_KEY = "vucaJourneyLog_v1";
+
+var QUAD = {
+  vision:{label:"ხედვა", sub:"სტრატეგიული აზროვნება", color:"#7f5290",
+    desc:"პასუხი ცვალებადობაზე. მომავლის მკაფიო სურათის შექმნა და ყოველდღიური ქმედებების დაკავშირება მიზნებთან."},
+  understanding:{label:"ურთიერთგაგება", sub:"აქტიური მოსმენა და ემპათია", color:"#8dc63f",
+    desc:"პასუხი გაურკვევლობაზე. კითხვების დასმა, განსხვავებული აზრის მოსმენა და დიალოგი გადაწყვეტილებამდე."},
+  clarity:{label:"სიცხადე", sub:"მკაფიო კომუნიკაცია", color:"#f26522",
+    desc:"პასუხი კომპლექსურობაზე. აზრის პირდაპირ გადმოცემა, პროცესების გამარტივება და დროული უკუკავშირი."},
+  agility:{label:"მოქნილობა", sub:"ადაპტირება ცვლილებებთან", color:"#4e3161",
+    desc:"პასუხი ორაზროვნებაზე. ცვლილების სწრაფად მიღება, ვითარების რეგულარული ანალიზი და კლიენტზე ფოკუსი."}
+};
+var QUAD_ORDER = ["vision","understanding","clarity","agility"];
+
+var STATEMENTS = [
+  {n:1, key:"vision", text:"აქტიურად ვმონაწილეობდი მომავლის მკაფიო სურათის შექმნაში."},
+  {n:2, key:"vision", text:"ჩემს ქმედებებსა და გადაწყვეტილებებს მიზნებს ვუკავშირებდი."},
+  {n:3, key:"understanding", text:"კითხვებს ვსვამდი და განსხვავებულ აზრს ბოლომდე ვუსმენდი."},
+  {n:4, key:"understanding", text:"გადაწყვეტილებამდე დიალოგს ვმართავდი და სხვის პოზიციას ვითვალისწინებდი."},
+  {n:5, key:"clarity", text:"აზრს პირდაპირ და გასაგებად გადმოვცემდი."},
+  {n:6, key:"clarity", text:"ვამარტივებდი პროცესს და უკუკავშირს დროულად გავცემდი."},
+  {n:7, key:"agility", text:"ცვლილებას სწრაფად ვიღებდი და მოქმედებას ვცვლიდი."},
+  {n:8, key:"agility", text:"რეგულარულად ვაანალიზებდი ვითარებას და ფოკუსს ვინარჩუნებდი მათ საჭიროებებზე, ვისთვისაც ვმუშაობდით."}
+];
+
+var ROLE_OPTIONS = ["ლიდერი","ორგანიზატორი","მხარდამჭერი","დამკვირვებელი","კრიტიკოსი","სხვა"];
+var EMOTION_OPTIONS = ["ინტერესი","სიმშვიდე","აზარტი","დაძაბულობა","დაბნეულობა","გაღიზიანება","სიამაყე","დაღლილობა","სხვა"];
+var REACTION_OPTIONS = ["ვაჩქარებ","ვაკონტროლებ","ვჩერდები","ველოდები","ვკითხულობ","სხვა"];
+var COMPETENCY_OPTIONS = ["სტრატეგიული აზროვნება","აქტიური მოსმენა და ემპათია","მკაფიო კომუნიკაცია","ადაპტირება ცვლილებებთან"];
+var TOOL_CHOICE_OPTIONS = ["VUCA Prime ნავიგატორი","50 დოლარის ტესტი","იდეის გაყიდვა","რეტროსპექტივა","თაიმბოქსი","უკუკავშირი SBII"];
+var TOOL_CHOICE_TO_ID = {
+  "VUCA Prime ნავიგატორი":1, "50 დოლარის ტესტი":2, "იდეის გაყიდვა":3,
+  "რეტროსპექტივა":4, "თაიმბოქსი":5, "უკუკავშირი SBII":6
+};
+
+var MONTH_NAMES = ["იანვარი","თებერვალი","მარტი","აპრილი","მაისი","ივნისი","ივლისი","აგვისტო","სექტემბერი","ოქტომბერი","ნოემბერი","დეკემბერი"];
+
+var REFLECT_LAST_PART = 6; /* parts 0..6, then step 7 = summary */
+
+var TOOLS = [
+  {
+    id:1, title:"VUCA Prime ნავიგატორი",
+    what:"ოთხი კომპეტენცია, რომლებიც VUCA სამყაროს ოთხ გამოწვევას პასუხობს: ცვალებადობა → ხედვა (სტრატეგიული აზროვნება); გაურკვევლობა → ურთიერთგაგება (აქტიური მოსმენა და ემპათია); კომპლექსურობა → სიცხადე (მკაფიო კომუნიკაცია); ორაზროვნება → მოქნილობა (ადაპტირება ცვლილებებთან).",
+    theory:"ტერმინი VUCA 1980-იანი წლების ბოლოს აშშ-ის არმიის სამხედრო კოლეჯში გაჩნდა და უორენ ბენისისა და ბერტ ნანუსის ლიდერობის იდეებს ეყრდნობა. ბიზნესში იგი 2000-იანი წლებიდან დამკვიდრდა. VUCA Prime შექმნა ბობ იოჰანსენმა (Institute for the Future) და აღწერა წიგნში „Leaders Make the Future“ (2009). მისი მთავარი აზრია, რომ გარემოს ვერ ვაკონტროლებთ, მაგრამ შეგვიძლია ავირჩიოთ ჩვენი პასუხი და ყოველ გამოწვევას კონკრეტული ლიდერული უნარი შეესაბამება.",
+    when:"როცა სიტუაცია რთულია და არ იცით, საიდან დაიწყოთ; როცა გუნდი დაბნეულია ან ცვლილების წინაშე დგას.",
+    how:["აღწერეთ სიტუაცია ერთი წინადადებით.",
+      "განსაზღვრეთ, რომელი გამოწვევა ჭარბობს: სწრაფად იცვლება (V), ინფორმაცია არ გვყოფნის (U), ძალიან ბევრი ურთიერთდაკავშირებული ფაქტორია (C), თუ ერთი და იგივე ფაქტი სხვადასხვანაირად იკითხება (A).",
+      "დაუსვით საკუთარ თავს შესაბამისი კითხვა. ხედვა: სად მივდივართ და რატომ? რა რჩება უცვლელი, როცა ყველაფერი იცვლება? ურთიერთგაგება: ვის უნდა ვკითხო და მოვუსმინო, სანამ გადავწყვეტ? სიცხადე: როგორ ვთქვა ეს ერთი მარტივი წინადადებით? რა შეიძლება გამარტივდეს? მოქნილობა: რა უნდა ვცადო მცირე ნაბიჯით და როდის შევამოწმო შედეგი?",
+      "აირჩიეთ ერთი კონკრეტული მოქმედება."],
+    example:"ბაზარზე ახალი კონკურენტი გამოჩნდა და გუნდი შფოთავს. ეს ცვალებადობაა, ამიტომ პასუხი ხედვაა: შეახსენეთ გუნდს, რა არის მთავარი მიზანი და რომელი პრიორიტეტები არ იცვლება.",
+    mistake:"ყველა პრობლემაზე ერთი და იმავე, საყვარელი კომპეტენციით პასუხი, მაგალითად მეტი კონტროლით იქ, სადაც მეტი მოსმენაა საჭირო."
+  },
+  {
+    id:2, title:"50 დოლარის ტესტი (პრიორიტეტების არჩევა)",
+    what:"შეზღუდული პირობითი ბიუჯეტის განაწილება მიზნებს ან იდეებს შორის, რათა გამოჩნდეს რეალური პრიორიტეტები. თამაშში ასე გაანაწილეთ 5 ვარსკვლავი 5 სფეროზე.",
+    theory:"მეთოდი ეკუთვნის ე.წ. კუმულაციური ხმის მიცემის ტექნიკებს; მონათესავე ვერსიებია „100 დოლარის ტესტი“ მოთხოვნების მართვაში (ლეფინგუელი და ვიდრიგი) და „Buy a Feature“ (ლუკ ჰომანი, „Innovation Games“, 2006). საფუძველი ეკონომიკის ძირითადი პრინციპია: რესურსი შეზღუდულია, ამიტომ ყოველი არჩევანი სხვა რამეზე უარის თქმას ნიშნავს. ჩვეულებრივი შეფასებისას ადამიანები ყველაფერს მაღალ ქულას უწერენ; ფულის განაწილება კი აიძულებს მათ, გააკეთონ არჩევანი და აჩვენონ არა მხოლოდ რიგი, არამედ სხვაობის სიდიდეც.",
+    when:"როცა ყველაფერი მნიშვნელოვანი ჩანს; როცა გუნდი პრიორიტეტებზე ვერ თანხმდება; სტრატეგიული მიზნების ან პროექტების შერჩევისას.",
+    how:["ჩამოწერეთ ვარიანტები (5–8).",
+      "თითოეული წევრი დამოუკიდებლად ანაწილებს 50 დოლარს; შეიძლება მთელი თანხის ერთ ვარიანტზე დადება.",
+      "შეკრიბეთ თანხები და დაალაგეთ ვარიანტები.",
+      "განიხილეთ დიდი სხვაობები: რატომ დადო ერთმა ბევრი და მეორემ არაფერი?",
+      "შეთანხმდით 1–2 მთავარ პრიორიტეტზე."],
+    example:"გუნდს კვარტალში 7 ინიციატივა აქვს. განაწილების შემდეგ ჩანს, რომ თანხის 70% ორ ინიციატივაზე მოდის; დანარჩენი ხუთი გადაიდება.",
+    mistake:"თანხის თანაბრად განაწილება ყველა ვარიანტზე, რაც არჩევანისგან თავის არიდებაა."
+  },
+  {
+    id:3, title:"იდეის გაყიდვა: ეთოსი, ლოგოსი, პათოსი",
+    what:"დამაჯერებელი გამოსვლის სამი საყრდენი. ეთოსი: მომხსენებლის სანდოობა („რატომ უნდა მენდონ?“). ლოგოსი: ლოგიკა და მტკიცებულება („რა ფაქტები მაქვს?“). პათოსი: მსმენელის ემოცია („რას იგრძნობს და რატომ არის ეს მისთვის მნიშვნელოვანი?“).",
+    theory:"მოდელი არისტოტელეს „რიტორიკიდან“ მოდის (ძვ. წ. IV საუკუნე). არისტოტელეს მიხედვით, დარწმუნება სამი წყაროდან მოდის: მოსაუბრის ხასიათიდან, თავად არგუმენტიდან და მსმენელის განწყობიდან. თანამედროვე ფსიქოლოგია ამას ადასტურებს: დანიელ კანემანის მიხედვით, გადაწყვეტილებებში სწრაფი, ემოციური აზროვნება ისევე მონაწილეობს, როგორც ნელი, რაციონალური, ამიტომ მხოლოდ ფაქტები იშვიათად არწმუნებს.",
+    when:"როცა გუნდი, ხელმძღვანელი ან კლიენტი უნდა დაარწმუნოთ; ცვლილების გამოცხადებისას; პროექტის ან ბიუჯეტის დაცვისას.",
+    how:["განსაზღვრეთ აუდიტორია: რა აწუხებს და რა სურს?",
+      "ეთოსი: აჩვენეთ გამოცდილება, გულწრფელობა და საერთო ინტერესი.",
+      "ლოგოსი: 2–3 ძლიერი არგუმენტი ციფრებით ან მაგალითებით.",
+      "პათოსი: ისტორია ან სურათი, რომელიც სარგებელს ხილულს ხდის.",
+      "დაასრულეთ კონკრეტული მოწოდებით: რას ითხოვთ მსმენელისგან?",
+      "ჩაეტიეთ 3 წუთში."],
+    example:"„ამ პროცესს ხუთი წელია ვმართავ (ეთოსი). ახალი სისტემა შეცდომებს 30%-ით ამცირებს (ლოგოსი). წარმოიდგინეთ თვის ბოლო ზეგანაკვეთური საათების გარეშე (პათოსი). გთხოვთ, დაამტკიცოთ ერთთვიანი პილოტი (მოწოდება).“",
+    mistake:"მხოლოდ ლოგოსზე დაყრდნობა, ან პათოსის გამოყენება ფაქტების გარეშე, რაც მანიპულაციად აღიქმება."
+  },
+  {
+    id:4, title:"რეტროსპექტივა: გავაგრძელოთ / შევწყვიტოთ / დავიწყოთ",
+    what:"გუნდის მოკლე, სტრუქტურირებული გაჩერება, რომ შეაფასოს საკუთარი მუშაობა და შეცვალოს იგი.",
+    theory:"რეტროსპექტივა Agile მიდგომის ნაწილია: Agile მანიფესტის (2001) მე-12 პრინციპის მიხედვით, გუნდი რეგულარულად აანალიზებს, როგორ გახდეს უფრო ეფექტიანი, და შესაბამისად ცვლის ქცევას. მეთოდი აღწერეს ნორმან კერთმა („Project Retrospectives“, 2001) და ესთერ დერბიმ და დაიანა ლარსენმა („Agile Retrospectives“, 2006). მისი წინამორბედია აშშ-ის არმიის „მოქმედების შემდგომი განხილვა“ (After Action Review). თეორიულად იგი ეყრდნობა კოლბის გამოცდილებით სწავლის ციკლს და კრის არჯირისის „ორმაგი მარყუჟის სწავლას“: გუნდი ასწორებს არა მხოლოდ შეცდომას, არამედ იმ წესს, რომელმაც შეცდომა გამოიწვია.",
+    when:"პროექტის ეტაპის, კვირის ან თვის ბოლოს; რთული სიტუაციის ან წარუმატებლობის შემდეგ; წარმატების შემდეგაც, რათა გაიგოთ, რამ იმუშავა.",
+    how:["გამოყავით 15 წუთი და შექმენით სამი სვეტი.",
+      "გავაგრძელოთ (5 წუთი): რა მუშაობს და უნდა შევინარჩუნოთ?",
+      "შევწყვიტოთ (5 წუთი): რა გვიშლის ხელს?",
+      "დავიწყოთ (5 წუთი): რა ახალი ვცადოთ?",
+      "აირჩიეთ 1–2 ცვლილება, დანიშნეთ პასუხისმგებელი და შემდეგ რეტროსპექტივაზე შეამოწმეთ შედეგი."],
+    example:"გავაგრძელოთ: დილის 10-წუთიანი შეხვედრა. შევწყვიტოთ: ამოცანების გადაცემა ზეპირად. დავიწყოთ: ერთი საერთო სია ყველა ამოცანისთვის.",
+    mistake:"დამნაშავის ძებნა პროცესის ნაცვლად, და გრძელი სია, რომლიდანაც არაფერი სრულდება."
+  },
+  {
+    id:5, title:"თაიმბოქსი (დროის ჩარჩო)",
+    what:"ამოცანისთვის წინასწარ განსაზღვრული, ფიქსირებული დრო. იცვლება არა ვადა, არამედ სამუშაოს მოცულობა.",
+    theory:"თაიმბოქსინგი 1990-იანი წლების დასაწყისში გაჩნდა პროგრამული უზრუნველყოფის სწრაფი შემუშავების მეთოდებში (ჯეიმს მარტინის RAD, შემდეგ DSDM) და დღეს Scrum-ის საფუძველია: სპრინტი და ყველა შეხვედრა დროით არის შეზღუდული. იგი ეყრდნობა პარკინსონის კანონს (1955): სამუშაო ფართოვდება იმდენად, რამდენ დროსაც გამოვუყოფთ. მკაფიო ვადა ამცირებს პერფექციონიზმსა და გადადებას და აიძულებს გუნდს, ჯერ მთავარი გააკეთოს.",
+    when:"შეხვედრებზე და დისკუსიებზე, რომლებიც ჭიანურდება; გადაწყვეტილებებზე, რომლებიც გადაიდება; ამოცანებზე, სადაც „კიდევ ცოტა“ არასდროს მთავრდება.",
+    how:["დასაწყისშივე დაასახელეთ მიზანი და დრო („20 წუთში გვაქვს გადაწყვეტილება“).",
+      "დანიშნეთ დროის მცველი და დრო გახადეთ ხილული.",
+      "ჯერ მთავარზე იმუშავეთ.",
+      "როცა დრო ამოიწურება, გაჩერდით და გადაწყვიტეთ იმით, რაც გაქვთ.",
+      "თუ მეტი დროა საჭირო, ეს ცალკე, გაცნობიერებული გადაწყვეტილებაა."],
+    example:"ერთსაათიანი შეხვედრა იყოფა სამ ბლოკად: 15 წუთი ინფორმაცია, 30 წუთი განხილვა, 15 წუთი გადაწყვეტილებები და შემდეგი ნაბიჯები.",
+    mistake:"დროის ჩუმად გაგრძელება, რის შემდეგაც ჩარჩოს აღარავინ ენდობა."
+  },
+  {
+    id:6, title:"უკუკავშირი SBII",
+    what:"უკუკავშირის ოთხი ნაბიჯი. სიტუაცია (Situation): როდის და სად მოხდა? ქცევა (Behaviour): კონკრეტულად რა გააკეთა ან თქვა ადამიანმა? გავლენა (Impact): რა შედეგი მოჰყვა ამას ჩემთვის, გუნდისთვის ან საქმისთვის? კითხვა (Inquiry): თქვენ როგორ ხედავთ? რა იყო თქვენი განზრახვა?",
+    theory:"SBI მოდელი შექმნა Center for Creative Leadership-მა (CCL); მეოთხე ნაბიჯი მოგვიანებით დაემატა, რათა უკუკავშირი მონოლოგიდან დიალოგად იქცეს და გამოჩნდეს სხვაობა ადამიანის განზრახვასა და რეალურ გავლენას შორის. მოდელი ეყრდნობა კვლევებს (კლუგერი და დენისი, 1996), რომელთა მიხედვით უკუკავშირი ეფექტიანია, როცა ქცევასა და ამოცანას ეხება, ხოლო პიროვნების შეფასება ხშირად შედეგს აუარესებს. კონკრეტული ფაქტი ამცირებს თავდაცვით რეაქციას, რადგან ადამიანს არ სჭირდება საკუთარი თავის დაცვა.",
+    when:"დადებითი („+“) და გასაუმჯობესებელი („Δ“) უკუკავშირისთვის; მოვლენიდან რაც შეიძლება მალე; პირისპირ საუბარში.",
+    how:["სიტუაცია: „გუშინდელ შეხვედრაზე კლიენტთან...“",
+      "ქცევა: „...პრეზენტაციისას ორჯერ გააწყვეტინეთ კოლეგას...“",
+      "გავლენა: „...მან საუბარი შეწყვიტა და მისი იდეა ვეღარ მოვისმინეთ.“",
+      "კითხვა: „თქვენ როგორ დაინახეთ ეს სიტუაცია?“",
+      "მოუსმინეთ პასუხს და ერთად შეთანხმდით შემდეგ ნაბიჯზე. მთელი საუბარი მაქსიმუმ 3 წუთია."],
+    example:"(დადებითი): „დღეს, როცა გეგმა მოულოდნელად შეიცვალა, თქვენ მშვიდად გადაანაწილეთ ამოცანები. ამის წყალობით გუნდმა 5 წუთში გააგრძელა მუშაობა. რა დაგეხმარათ?“",
+    mistake:"შეფასება ფაქტის ნაცვლად („უპასუხისმგებლო ხართ“), განზოგადება („ყოველთვის“, „არასდროს“) და მეოთხე ნაბიჯის გამოტოვება."
+  }
+];
+
+function defaultState(){
+  return {
+    selfScores:[0,0,0,0,0,0,0,0],
+    p1:{q1:"",q2:"",q3:"",q4:""},
+    p2:{role:"",roleNote:"",q2:"",q3:"",q4:"",q5:""},
+    p3:{emoStart:"",emoMid:"",emoEnd:"",emoNote:"",q2:"",q3:"",q4:""},
+    p4:{q1:"",q2:"",q3:"",q4:"",q5:""},
+    p5:{q1:"",reaction:"",reactionNote:"",compHelp:"",compHelpNote:"",compLack:"",compLackNote:"",insight:""},
+    p6:{keep:"",change:"",situation:"",tool:"",toolNote:"",hinderHelp:""},
+    flags:{reflectDone:false}
+  };
+}
+
+var state = loadState();
+var nav = {screen:"home"};
+var timerHandle = null;
+
+function loadState(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultState();
+    var parsed = JSON.parse(raw);
+    var d = defaultState();
+    ["p1","p2","p3","p4","p5","p6"].forEach(function(k){
+      if(parsed[k]) d[k] = Object.assign(d[k], parsed[k]);
+    });
+    if(Array.isArray(parsed.selfScores) && parsed.selfScores.length===8) d.selfScores = parsed.selfScores;
+    d.flags = Object.assign(d.flags, parsed.flags||{});
+    return d;
+  }catch(e){ return defaultState(); }
+}
+
+function save(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+function escapeHtml(s){
+  return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// Georgian mkhedruli->mtavruli conversion. CSS text-transform:uppercase is unreliable
+// for Georgian on many browsers, so we pre-convert text in JS (String.toUpperCase
+// correctly maps Georgian mkhedruli to mtavruli per Unicode default case folding).
+function U(s){
+  return String(s==null?"":s).toUpperCase();
+}
+
+function trimEndPunct(s){
+  return String(s==null?"":s).replace(/[.!?]+\s*$/,"");
+}
+
+function qs(sel, root){ return (root||document).querySelector(sel); }
+function qsa(sel, root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+
+function clearTimer(){
+  if(timerHandle){ clearInterval(timerHandle); timerHandle = null; }
+}
+
+function go(screen, extra){
+  clearTimer();
+  nav = Object.assign({screen:screen}, extra||{});
+  render();
+  qs("#content").scrollTop = 0;
+}
+
+/* ---------- scoring helpers ---------- */
+function competencyAvg(key){
+  var idxs = STATEMENTS.filter(function(s){return s.key===key;}).map(function(s){return s.n-1;});
+  var vals = idxs.map(function(i){return state.selfScores[i];}).filter(function(v){return v>0;});
+  if(!vals.length) return 0;
+  return vals.reduce(function(a,b){return a+b;},0) / vals.length;
+}
+function allCompetencyAvgs(){
+  var out = {};
+  QUAD_ORDER.forEach(function(k){ out[k] = competencyAvg(k); });
+  return out;
+}
+function strongAndGrowth(){
+  var avgs = allCompetencyAvgs();
+  var answered = QUAD_ORDER.filter(function(k){return avgs[k]>0;});
+  if(!answered.length) return {strong:[], growth:[]};
+  var max = Math.max.apply(null, answered.map(function(k){return avgs[k];}));
+  var min = Math.min.apply(null, answered.map(function(k){return avgs[k];}));
+  return {
+    strong: answered.filter(function(k){return avgs[k]===max;}),
+    growth: answered.filter(function(k){return avgs[k]===min;})
+  };
+}
+
+function hasDataReflect(){
+  if(state.selfScores.some(function(v){return v>0;})) return true;
+  var parts = [state.p1,state.p2,state.p3,state.p4,state.p5,state.p6];
+  return parts.some(function(p){
+    return Object.keys(p).some(function(k){ return p[k]; });
+  });
+}
+function statusOf(){
+  return state.flags.reflectDone ? "done" : (hasDataReflect() ? "progress" : "not");
+}
+function statusLabel(s){
+  if(s==="done") return "დასრულებულია";
+  if(s==="progress") return "დაწყებულია";
+  return "არ დაწყებულა";
+}
+function statusClass(s){
+  if(s==="done") return "status-done";
+  if(s==="progress") return "status-progress";
+  return "status-not";
+}
+
+/* ---------- render dispatcher ---------- */
+function render(){
+  renderTopbar();
+  renderContent();
+  renderBottombar();
+}
+
+function renderTopbar(){
+  var tb = qs("#topbar");
+  if(nav.screen==="reflect" && nav.step<=REFLECT_LAST_PART){
+    var pct = Math.round((nav.step/REFLECT_LAST_PART)*100);
+    var label = nav.step===0 ? "თვითშეფასება" : ("ნაწილი "+nav.step+"/"+REFLECT_LAST_PART);
+    tb.className = "topbar";
+    tb.innerHTML =
+      '<div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="progress-label"><span>'+label+'</span><span id="timerDisplay" class="timer-display"></span></div>';
+    startPartTimer(nav.step===0 ? 180 : 120);
+  } else {
+    tb.className = "topbar empty";
+    tb.innerHTML = "";
+  }
+}
+
+function startPartTimer(totalSeconds){
+  if(!nav.timerDeadline) nav.timerDeadline = Date.now() + totalSeconds*1000;
+  var disp = qs("#timerDisplay");
+  function tick(){
+    disp = qs("#timerDisplay");
+    if(!disp) return;
+    var remain = Math.round((nav.timerDeadline - Date.now())/1000);
+    if(remain <= 0){
+      disp.textContent = "⏰ დრო ამოიწურა";
+      disp.className = "timer-display expired";
+    } else {
+      var m = Math.floor(remain/60), s = remain%60;
+      disp.textContent = m+":"+(s<10?"0":"")+s;
+      disp.className = "timer-display";
+    }
+  }
+  tick();
+  clearTimer();
+  timerHandle = setInterval(tick, 1000);
+}
+
+function renderContent(){
+  var el = qs("#content");
+  var html = "";
+  switch(nav.screen){
+    case "home": html = screenHome(); break;
+    case "reflect":
+      html = (nav.step<=REFLECT_LAST_PART) ? screenReflectPart(nav.step) : screenSummary();
+      break;
+    case "toolsList": html = screenToolsList(); break;
+    case "toolCard": html = screenToolCard(nav.id); break;
+    case "pdf": html = screenPdf(); break;
+  }
+  el.innerHTML = html;
+  attachHandlers();
+  qsa("textarea", el).forEach(autoGrow);
+}
+
+function renderBottombar(){
+  var bb = qs("#bottombar");
+  var html = "";
+  if(nav.screen==="home"){
+    bb.style.display = "none"; bb.innerHTML = ""; return;
+  }
+  bb.style.display = "flex";
+  if(nav.screen==="toolsList" || nav.screen==="pdf"){
+    html = '<button class="btn btn-secondary btn-full mtavruli" id="btnBack">← '+U("მთავარი")+'</button>';
+  } else if(nav.screen==="toolCard"){
+    html = '<button class="btn btn-secondary btn-full mtavruli" id="btnBack">← '+U("სახელმძღვანელოში დაბრუნება")+'</button>';
+  } else if(nav.screen==="reflect"){
+    if(nav.step <= REFLECT_LAST_PART){
+      html = '<button class="btn btn-secondary mtavruli" id="btnBack">'+U("უკან")+'</button>'+
+             '<button class="btn btn-primary mtavruli" id="btnNext">'+U("შემდეგი")+'</button>';
+    } else {
+      html = '<button class="btn btn-secondary mtavruli" id="btnBack">'+U("უკან")+'</button>'+
+             '<button class="btn btn-primary mtavruli" id="btnNext">'+U("მთავარზე დაბრუნება")+'</button>';
+    }
+  }
+  bb.innerHTML = html;
+  var back = qs("#btnBack"); if(back) back.addEventListener("click", onBack);
+  var next = qs("#btnNext"); if(next) next.addEventListener("click", onNext);
+}
+
+function onBack(){
+  if(nav.screen==="toolCard"){ go("toolsList"); return; }
+  if(nav.screen==="toolsList" || nav.screen==="pdf"){ go("home"); return; }
+  if(nav.screen==="reflect"){
+    if(nav.step<=0){ go("home"); return; }
+    go("reflect", {step: nav.step - 1});
+  }
+}
+
+function onNext(){
+  if(nav.screen==="reflect"){
+    if(nav.step >= REFLECT_LAST_PART+1){ go("home"); return; }
+    var next = nav.step + 1;
+    if(next === REFLECT_LAST_PART+1){ state.flags.reflectDone = true; save(); }
+    go("reflect", {step: next});
+    return;
+  }
+}
+
+/* ---------- autosize ---------- */
+function autoGrow(el){
+  el.style.height = "auto";
+  el.style.height = (el.scrollHeight) + "px";
+}
+
+/* ---------- HOME ---------- */
+function screenHome(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ჩემი მოგზაურობის ჟურნალი")+'</h1>';
+  out += '<div class="home-intro">ეს ჩანაწერები მხოლოდ თქვენია. ყველაფერი რჩება თქვენს ტელეფონში — ტრენერი მას ვერ ხედავს.</div>';
+
+  var s = statusOf();
+  out += '<button class="card" data-nav="reflect">'+
+    '<span><span class="card-title mtavruli">'+U("თვითრეფლექსია")+'</span><br><span class="card-sub">დაახლ. 15 წუთი</span></span>'+
+    '<span class="status-pill '+statusClass(s)+'">'+statusLabel(s)+'</span></button>';
+
+  out += '<button class="card" data-nav="toolsList">'+
+    '<span><span class="card-title mtavruli">'+U("ინსტრუმენტების სახელმძღვანელო")+'</span><br><span class="card-sub">ცნობარი — ნებისმიერ დროს</span></span></button>';
+
+  out += '<button class="card" data-nav="pdf">'+
+    '<span><span class="card-title mtavruli">'+U("ჩემი PDF")+'</span><br><span class="card-sub">ჩამოტვირთეთ თქვენი ანგარიში</span></span></button>';
+
+  return out;
+}
+
+/* ---------- field helpers ---------- */
+function qBlock(fieldPath, label, value){
+  return '<div class="q-block"><label class="field-label">'+label+'</label>'+
+    '<textarea data-field="'+fieldPath+'" placeholder="დაწერეთ...">'+escapeHtml(value)+'</textarea></div>';
+}
+function chipGroup(fieldPath, options, selected, compact){
+  var cls = compact ? "emo-chip-row" : "chip-list";
+  var itemCls = compact ? "emo-chip" : "chip";
+  var out = '<div class="'+cls+'">';
+  options.forEach(function(o){
+    var sel = selected===o;
+    out += '<button class="'+itemCls+(sel?" selected":"")+'" data-choice="'+fieldPath+'::'+escapeHtml(o)+'">'+o+'</button>';
+  });
+  out += '</div>';
+  return out;
+}
+function noteField(fieldPath, value){
+  return '<textarea data-field="'+fieldPath+'" placeholder="დამატებით, თუ გსურთ..." style="margin-top:8px;">'+escapeHtml(value)+'</textarea>';
+}
+
+/* ---------- REFLECT PART DISPATCH ---------- */
+function screenReflectPart(step){
+  if(step===0) return screenSelfAssessment();
+  if(step===1) return screenPart1();
+  if(step===2) return screenPart2();
+  if(step===3) return screenPart3();
+  if(step===4) return screenPart4();
+  if(step===5) return screenPart5();
+  if(step===6) return screenPart6();
+  return "";
+}
+
+/* ---------- PART 0: SELF-ASSESSMENT ---------- */
+function screenSelfAssessment(){
+  var out = '<h1 class="screen-title mtavruli">'+U("თვითშეფასება")+'</h1>';
+  out += '<p class="hint">გაიხსენეთ, როგორ მოქმედებდით თამაშის დროს. შეაფასეთ თითოეული დებულება 1-დან 5-მდე: 1 = თითქმის არასდროს, 5 = თითქმის ყოველთვის. სწორი და არასწორი პასუხი არ არსებობს.</p>';
+  out += '<div class="diagram-placeholder">📋 VUCA Prime ნავიგატორის სქემა (V/U/C/A წრე) და სლაიდი „რა კომპეტენციები გვჭირდება VUCA სამყაროში?“ ამ ეტაპზე მიუწვდომელია — იხილეთ ტექსტი ქვემოთ</div>';
+
+  QUAD_ORDER.forEach(function(key){
+    var q = QUAD[key];
+    out += '<div class="competency-block">';
+    out += '<div class="competency-head mtavruli" style="color:'+q.color+'">'+U(q.label)+' ('+U(q.sub)+')</div>';
+    out += '<div class="competency-desc">'+q.desc+'</div>';
+    STATEMENTS.filter(function(s){return s.key===key;}).forEach(function(s){
+      out += '<div class="statement-text">'+s.n+'. '+s.text+'</div>';
+      out += '<div class="scale-row">';
+      for(var i=1;i<=5;i++){
+        var sel = state.selfScores[s.n-1]===i;
+        out += '<button class="scale-btn'+(sel?" selected":"")+'" data-selfscore="'+s.n+'" data-val="'+i+'">'+i+'</button>';
+      }
+      out += '</div>';
+      out += '<div class="scale-endlabels"><span>თითქმის არასდროს</span><span>თითქმის ყოველთვის</span></div>';
+    });
+    out += '</div>';
+  });
+  return out;
+}
+
+/* ---------- PART 1 ---------- */
+function screenPart1(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ნაწილი 1. რა მოხდა?")+'</h1>';
+  out += qBlock("p1.q1", "რა მოხდა თამაშის დროს? აღწერეთ მოკლედ, თქვენი სიტყვებით.", state.p1.q1);
+  out += qBlock("p1.q2", "რომელი მომენტი გახსენდებათ ყველაზე მკაფიოდ?", state.p1.q2);
+  out += qBlock("p1.q3", "რომელი მომენტი იყო თქვენთვის ყველაზე რთული?", state.p1.q3);
+  out += qBlock("p1.q4", "რომელი მომენტი იყო ყველაზე წარმატებული?", state.p1.q4);
+  return out;
+}
+
+/* ---------- PART 2 ---------- */
+function screenPart2(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ნაწილი 2. როგორ ვმოქმედებდი?")+'</h1>';
+  out += '<div class="q-block"><label class="field-label">რა როლი ავიღე?</label>';
+  out += chipGroup("p2.role", ROLE_OPTIONS, state.p2.role, false);
+  out += noteField("p2.roleNote", state.p2.roleNote);
+  out += '</div>';
+  out += qBlock("p2.q2", "ეს როლი თავად ავირჩიე თუ თავისით გამოვიდა?", state.p2.q2);
+  out += qBlock("p2.q3", "რას ვაკეთებდი, როცა დრო იწურებოდა?", state.p2.q3);
+  out += qBlock("p2.q4", "რას ვაკეთებდი, როცა ინფორმაცია არ მყოფნიდა?", state.p2.q4);
+  out += qBlock("p2.q5", "როგორ ვიმოქმედე, როცა წესები მოულოდნელად შეიცვალა?", state.p2.q5);
+  return out;
+}
+
+/* ---------- PART 3 ---------- */
+function screenPart3(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ნაწილი 3. რას ვგრძნობდი?")+'</h1>';
+  out += '<div class="q-block"><label class="field-label">რას ვგრძნობდი თამაშის დასაწყისში, შუაში და ბოლოს?</label>';
+  out += '<div class="emo-group"><div class="emo-group-label">დასაწყისში</div>'+chipGroup("p3.emoStart", EMOTION_OPTIONS, state.p3.emoStart, true)+'</div>';
+  out += '<div class="emo-group"><div class="emo-group-label">შუაში</div>'+chipGroup("p3.emoMid", EMOTION_OPTIONS, state.p3.emoMid, true)+'</div>';
+  out += '<div class="emo-group"><div class="emo-group-label">ბოლოს</div>'+chipGroup("p3.emoEnd", EMOTION_OPTIONS, state.p3.emoEnd, true)+'</div>';
+  out += noteField("p3.emoNote", state.p3.emoNote);
+  out += '</div>';
+  out += qBlock("p3.q2", "როდის ვიყავი ყველაზე მეტად ჩართული?", state.p3.q2);
+  out += qBlock("p3.q3", "როდის მომინდა განზე გადგომა?", state.p3.q3);
+  out += qBlock("p3.q4", "რამ გამოიწვია ჩემში ყველაზე ძლიერი ემოცია?", state.p3.q4);
+  return out;
+}
+
+/* ---------- PART 4 ---------- */
+function screenPart4(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ნაწილი 4. როგორი ვიყავი სხვებთან?")+'</h1>';
+  out += qBlock("p4.q1", "როდის ვამბობდი ჩემს აზრს და როდის ვდუმდი?", state.p4.q1);
+  out += qBlock("p4.q2", "ვის ვუსმენდი? ვინ მისმენდა მე?", state.p4.q2);
+  out += qBlock("p4.q3", "როგორ ვიქცეოდი უთანხმოების დროს?", state.p4.q3);
+  out += qBlock("p4.q4", "ვის დავეხმარე და ვისგან მივიღე დახმარება?", state.p4.q4);
+  out += qBlock("p4.q5", "რას ვიტყოდი ახლა გუნდის წევრებისთვის, რაც თამაშის დროს არ მითქვამს?", state.p4.q5);
+  return out;
+}
+
+/* ---------- PART 5 ---------- */
+function screenPart5(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ნაწილი 5. რას მეუბნება ეს ჩემზე რეალურ ცხოვრებაში?")+'</h1>';
+  out += qBlock("p5.q1", "ნაცნობია ჩემთვის ასეთი ქცევა? სამსახურშიც ასე ვმოქმედებ, როცა სიტუაცია გაურკვეველია ან სწრაფად იცვლება?", state.p5.q1);
+
+  out += '<div class="q-block"><label class="field-label">რა არის ჩემი პირველი რეაქცია წნეხზე?</label>';
+  out += chipGroup("p5.reaction", REACTION_OPTIONS, state.p5.reaction, false);
+  out += noteField("p5.reactionNote", state.p5.reactionNote);
+  out += '</div>';
+
+  out += '<div class="q-block"><label class="field-label">რომელი კომპეტენცია მეხმარება ყველაზე მეტად?</label>';
+  out += chipGroup("p5.compHelp", COMPETENCY_OPTIONS, state.p5.compHelp, false);
+  out += noteField("p5.compHelpNote", state.p5.compHelpNote);
+  out += '</div>';
+
+  out += '<div class="q-block"><label class="field-label">რომელი მაკლდება პირველი, როცა წნეხი იზრდება?</label>';
+  out += chipGroup("p5.compLack", COMPETENCY_OPTIONS, state.p5.compLack, false);
+  out += noteField("p5.compLackNote", state.p5.compLackNote);
+  out += '</div>';
+
+  out += qBlock("p5.insight", "რა ვისწავლე საკუთარ თავზე? (ერთი წინადადება)", state.p5.insight);
+  return out;
+}
+
+/* ---------- PART 6 ---------- */
+function screenPart6(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ნაწილი 6. რას ვცდი?")+'</h1>';
+  out += qBlock("p6.keep", "ერთი რამ, რასაც გავაგრძელებ.", state.p6.keep);
+  out += qBlock("p6.change", "ერთი რამ, რასაც სხვანაირად გავაკეთებ.", state.p6.change);
+  out += qBlock("p6.situation", "კონკრეტული სიტუაცია უახლოეს კვირებში, სადაც ამას ვცდი.", state.p6.situation);
+
+  out += '<div class="q-block"><label class="field-label">რომელ ინსტრუმენტს გამოვიყენებ?</label>';
+  out += chipGroup("p6.tool", TOOL_CHOICE_OPTIONS, state.p6.tool, false);
+  out += noteField("p6.toolNote", state.p6.toolNote);
+  out += '</div>';
+
+  out += qBlock("p6.hinderHelp", "რა შემიშლის ხელს და რა დამეხმარება?", state.p6.hinderHelp);
+  return out;
+}
+
+/* ---------- SUMMARY ---------- */
+function section(title, value){
+  return '<div class="summary-section"><h3>'+title+'</h3>'+
+    (value ? '<div class="summary-text">'+value+'</div>' : '<div class="summary-empty">არ არის შევსებული</div>')+
+    '</div>';
+}
+
+function screenSummary(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ჩემი შეჯამება")+'</h1>';
+
+  out += '<div class="summary-section"><h3>თვითშეფასების შედეგი</h3><div class="quad-bars">';
+  var avgs = allCompetencyAvgs();
+  QUAD_ORDER.forEach(function(k){
+    var v = avgs[k];
+    var pct = v ? (v/5*100) : 0;
+    out += '<div class="quad-bar-row"><div class="quad-label mtavruli" style="color:'+QUAD[k].color+'">'+U(QUAD[k].label)+'</div>'+
+      '<div class="quad-bar-track"><div class="quad-bar-fill" style="width:'+pct+'%;background:'+QUAD[k].color+'">'+(v?v.toFixed(1)+"/5":"")+'</div></div></div>';
+  });
+  out += '</div>';
+  var sg = strongAndGrowth();
+  if(sg.strong.length){
+    out += '<div class="strength-box"><b>ჩემი ძლიერი მხარე:</b> '+sg.strong.map(function(k){return QUAD[k].label;}).join(", ")+'</div>';
+    out += '<div class="growth-box"><b>ჩემი განვითარების ზონა:</b> '+sg.growth.map(function(k){return QUAD[k].label;}).join(", ")+'</div>';
+  } else {
+    out += '<div class="summary-empty">თვითშეფასება არ არის შევსებული</div>';
+  }
+  out += '</div>';
+
+  out += section("ჩემი მთავარი მიგნება", state.p5.insight ? escapeHtml(state.p5.insight) : null);
+
+  out += '<div class="summary-section"><h3>ჩემი ერთი ნაბიჯი</h3>';
+  var stepParts = [];
+  if(state.p6.change) stepParts.push(trimEndPunct(state.p6.change));
+  if(state.p6.situation) stepParts.push(trimEndPunct(state.p6.situation));
+  if(stepParts.length){
+    out += '<div class="summary-text">'+escapeHtml(stepParts.join(" — "))+'.</div>';
+  } else {
+    out += '<div class="summary-empty">არ არის შევსებული</div>';
+  }
+  if(state.p6.tool){
+    var toolId = TOOL_CHOICE_TO_ID[state.p6.tool];
+    out += '<button class="quad-tag" style="background:var(--purple);border:none;cursor:pointer;" data-tool-link="'+toolId+'">'+state.p6.tool+' →</button>';
+  }
+  out += '</div>';
+
+  out += '<div class="closing-note">თქვენ თავად წყვეტთ, რას გაუზიარებთ ჯგუფს. დანარჩენი პირადი რჩება.</div>';
+
+  return out;
+}
+
+/* ---------- TOOLS GUIDE ---------- */
+function screenToolsList(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ინსტრუმენტების სახელმძღვანელო")+'</h1>';
+  out += '<div class="diagram-placeholder">📋 ინსტრუმენტების შემაჯამებელი სლაიდი ამ ეტაპზე მიუწვდომელია — იხილეთ სია ქვემოთ</div>';
+  TOOLS.forEach(function(t){
+    out += '<button class="card" data-toolcard="'+t.id+'">'+
+      '<span><span class="card-title mtavruli">'+U(t.title)+'</span></span></button>';
+  });
+  return out;
+}
+function screenToolCard(id){
+  var t = TOOLS.filter(function(x){return x.id===id;})[0];
+  if(!t) return "";
+  var out = '<div class="tool-detail">';
+  out += '<div class="diagram-placeholder">📋 „'+t.title+'“ სქემა ამ ეტაპზე მიუწვდომელია — იხილეთ ტექსტი ქვემოთ</div>';
+  out += '<h2 class="mtavruli">'+U(t.title)+'</h2>';
+  out += '<div class="tool-section-label mtavruli">'+U("რა არის")+'</div><div class="tool-body-text">'+t.what+'</div>';
+  out += '<details class="theory-details"><summary class="mtavruli">'+U("თეორიული საფუძველი")+'</summary><div class="tool-body-text">'+t.theory+'</div></details>';
+  out += '<div class="tool-section-label mtavruli">'+U("როდის გამოვიყენო")+'</div><div class="tool-body-text">'+t.when+'</div>';
+  out += '<div class="tool-section-label mtavruli">'+U("როგორ გამოვიყენო")+'</div><ol class="tool-steps">';
+  t.how.forEach(function(s){ out += '<li>'+s+'</li>'; });
+  out += '</ol>';
+  out += '<div class="tool-section-label mtavruli">'+U("მაგალითი")+'</div><div class="example-box">'+t.example+'</div>';
+  out += '<div class="tool-section-label mtavruli">'+U("ხშირი შეცდომა")+'</div><div class="mistake-box">'+t.mistake+'</div>';
+  out += '</div>';
+  return out;
+}
+
+/* ---------- PDF SCREEN ---------- */
+function screenPdf(){
+  var out = '<h1 class="screen-title mtavruli">'+U("ჩემი PDF")+'</h1>';
+  out += '<div class="pdf-intro">ანგარიში მოიცავს:</div>';
+  out += '<ul class="pdf-list">'+
+    '<li>ინსტრუმენტების სახელმძღვანელოს — დეტალური აღწერით და გამოყენების მითითებებით</li>'+
+    '<li>ჩემს თვითშეფასებას — ოთხი კომპეტენციის ქულები, ძლიერი მხარე და განვითარების ზონა</li>'+
+    '<li>ჩემს სრულ თვითრეფლექსიას — ყველა ნაწილის პასუხებს</li>'+
+    '<li>ჩემს ერთ ნაბიჯსა და არჩეულ ინსტრუმენტს</li>'+
+    '</ul>';
+  out += '<div class="final-btn-stack">';
+  out += '<button class="btn btn-outline btn-full mtavruli" id="btnPdf" style="display:none;">'+U("PDF ანგარიშის ჩამოტვირთვა")+'</button>';
+  out += '<p class="hint" id="pdfFallback" style="text-align:center;display:none;">გადაიღეთ სქრინშოთი თქვენი შეჯამებიდან, რომ შეინახოთ.</p>';
+  out += '<button class="btn btn-danger-outline btn-full mtavruli" id="btnReset">'+U("თავიდან დაწყება")+'</button>';
+  out += '</div>';
+  return out;
+}
+
+/* ---------- event handlers ---------- */
+function getPath(obj, path){
+  var parts = path.split(".");
+  var o = obj;
+  for(var i=0;i<parts.length-1;i++){ o = o[parts[i]]; }
+  return {obj:o, key:parts[parts.length-1]};
+}
+
+function attachHandlers(){
+  var root = qs("#content");
+
+  qsa("[data-nav]", root).forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var target = btn.getAttribute("data-nav");
+      if(target==="reflect") go("reflect", {step:0});
+      else if(target==="toolsList") go("toolsList");
+      else if(target==="pdf") go("pdf");
+    });
+  });
+
+  qsa("[data-field]", root).forEach(function(el){
+    el.addEventListener("input", function(){
+      var p = getPath(state, el.getAttribute("data-field"));
+      p.obj[p.key] = el.value;
+      save(); autoGrow(el);
+    });
+  });
+
+  qsa("[data-choice]", root).forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var raw = btn.getAttribute("data-choice");
+      var sep = raw.indexOf("::");
+      var fieldPath = raw.slice(0,sep);
+      var value = raw.slice(sep+2);
+      var p = getPath(state, fieldPath);
+      p.obj[p.key] = (p.obj[p.key]===value) ? "" : value;
+      save(); render();
+    });
+  });
+
+  qsa("[data-selfscore]", root).forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var n = parseInt(btn.getAttribute("data-selfscore"),10);
+      var val = parseInt(btn.getAttribute("data-val"),10);
+      state.selfScores[n-1] = (state.selfScores[n-1]===val) ? 0 : val;
+      save(); render();
+    });
+  });
+
+  qsa("[data-toolcard]", root).forEach(function(btn){
+    btn.addEventListener("click", function(){
+      go("toolCard", {id: parseInt(btn.getAttribute("data-toolcard"),10)});
+    });
+  });
+
+  qsa("[data-tool-link]", root).forEach(function(btn){
+    btn.addEventListener("click", function(){
+      go("toolCard", {id: parseInt(btn.getAttribute("data-tool-link"),10)});
+    });
+  });
+
+  var btnReset = qs("#btnReset", root);
+  if(btnReset) btnReset.addEventListener("click", openResetModal);
+
+  var btnPdf = qs("#btnPdf", root);
+  var pdfFallback = qs("#pdfFallback", root);
+  if(btnPdf){
+    checkPdfAvailable().then(function(ok){
+      if(ok){ btnPdf.style.display="block"; }
+      else if(pdfFallback){ pdfFallback.style.display="block"; }
+    });
+    btnPdf.addEventListener("click", downloadPdf);
+  }
+}
+
+/* ---------- reset modal ---------- */
+function openResetModal(){
+  var mr = qs("#modal-root");
+  mr.innerHTML = '<div class="modal-overlay"><div class="modal-box">'+
+    '<p>დარწმუნებული ხართ? ყველა ჩანაწერი წაიშლება და აღარ შეგეძლებათ დაბრუნება.</p>'+
+    '<div class="modal-actions">'+
+      '<button class="btn btn-secondary mtavruli" id="modalCancel">'+U("გაუქმება")+'</button>'+
+      '<button class="btn btn-primary mtavruli" id="modalConfirm" style="background:var(--orange)">'+U("დიახ, წავშალოთ")+'</button>'+
+    '</div></div></div>';
+  qs("#modalCancel").addEventListener("click", function(){ mr.innerHTML=""; });
+  qs("#modalConfirm").addEventListener("click", function(){
+    localStorage.removeItem(STORAGE_KEY);
+    state = defaultState();
+    mr.innerHTML = "";
+    go("home");
+  });
+}
+
+function showToast(msg){
+  var tr = qs("#toast-root");
+  tr.innerHTML = '<div class="toast">'+msg+'</div>';
+  setTimeout(function(){ tr.innerHTML = ""; }, 3200);
+}
+
+/* ---------- answer collection (summary + pdf) ---------- */
+function collectAnswers(){
+  return [
+    {title:"ნაწილი 1: რა მოხდა?", items:[
+      {q:"რა მოხდა თამაშის დროს?", a:state.p1.q1},
+      {q:"ყველაზე მკაფიო მომენტი", a:state.p1.q2},
+      {q:"ყველაზე რთული მომენტი", a:state.p1.q3},
+      {q:"ყველაზე წარმატებული მომენტი", a:state.p1.q4}
+    ]},
+    {title:"ნაწილი 2: როგორ ვმოქმედებდი?", items:[
+      {q:"როლი", a:[state.p2.role,state.p2.roleNote].filter(Boolean).join(" — ")},
+      {q:"როლი თავად ავირჩიე თუ თავისით გამოვიდა?", a:state.p2.q2},
+      {q:"დრო იწურებოდა", a:state.p2.q3},
+      {q:"ინფორმაცია არ მყოფნიდა", a:state.p2.q4},
+      {q:"წესები მოულოდნელად შეიცვალა", a:state.p2.q5}
+    ]},
+    {title:"ნაწილი 3: რას ვგრძნობდი?", items:[
+      {q:"ემოციები (დასაწყისი / შუა / ბოლო)", a:[state.p3.emoStart,state.p3.emoMid,state.p3.emoEnd].filter(Boolean).join(" / ")+(state.p3.emoNote?(" — "+state.p3.emoNote):"")},
+      {q:"ყველაზე ჩართული მომენტი", a:state.p3.q2},
+      {q:"განზე გადგომის სურვილი", a:state.p3.q3},
+      {q:"ყველაზე ძლიერი ემოციის მიზეზი", a:state.p3.q4}
+    ]},
+    {title:"ნაწილი 4: როგორი ვიყავი სხვებთან?", items:[
+      {q:"აზრის თქმა / დუმილი", a:state.p4.q1},
+      {q:"მოსმენა", a:state.p4.q2},
+      {q:"უთანხმოება", a:state.p4.q3},
+      {q:"დახმარება", a:state.p4.q4},
+      {q:"რას ვეტყოდი ახლა", a:state.p4.q5}
+    ]},
+    {title:"ნაწილი 5: რას მეუბნება ეს ჩემზე რეალურ ცხოვრებაში?", items:[
+      {q:"ნაცნობი ქცევა?", a:state.p5.q1},
+      {q:"პირველი რეაქცია წნეხზე", a:[state.p5.reaction,state.p5.reactionNote].filter(Boolean).join(" — ")},
+      {q:"რომელი კომპეტენცია მეხმარება", a:[state.p5.compHelp,state.p5.compHelpNote].filter(Boolean).join(" — ")},
+      {q:"რომელი მაკლდება", a:[state.p5.compLack,state.p5.compLackNote].filter(Boolean).join(" — ")},
+      {q:"მთავარი მიგნება", a:state.p5.insight}
+    ]},
+    {title:"ნაწილი 6: რას ვცდი?", items:[
+      {q:"გავაგრძელებ", a:state.p6.keep},
+      {q:"სხვანაირად გავაკეთებ", a:state.p6.change},
+      {q:"სიტუაცია", a:state.p6.situation},
+      {q:"ინსტრუმენტი", a:[state.p6.tool,state.p6.toolNote].filter(Boolean).join(" — ")},
+      {q:"რა შემიშლის ხელს და რა დამეხმარება", a:state.p6.hinderHelp}
+    ]}
+  ];
+}
+
+/* ---------- PDF ---------- */
+function pdfLibsReady(){
+  return !!(window.html2canvas && window.jspdf && window.jspdf.jsPDF);
+}
+function checkPdfAvailable(){
+  return new Promise(function(resolve){
+    var supportsDownload = "download" in document.createElement("a");
+    if(!supportsDownload){ resolve(false); return; }
+    if(pdfLibsReady()){ resolve(true); return; }
+    if(window.__pdfLibFailed){ resolve(false); return; }
+    var tries = 0;
+    var iv = setInterval(function(){
+      tries++;
+      if(pdfLibsReady()){ clearInterval(iv); resolve(true); }
+      else if(window.__pdfLibFailed || tries>20){ clearInterval(iv); resolve(false); }
+    }, 250);
+  });
+}
+
+function formatDateGeorgian(){
+  var d = new Date();
+  return d.getDate()+" "+MONTH_NAMES[d.getMonth()]+" "+d.getFullYear();
+}
+
+function buildPdfPages(){
+  var p1 = qs("#pdfPage1");
+  var p2 = qs("#pdfPage2");
+
+  var h = '<h1>ინსტრუმენტების სახელმძღვანელო</h1>';
+  h += '<div class="pdf-sub">ჩემი მოგზაურობის ჟურნალი · '+formatDateGeorgian()+'</div>';
+  TOOLS.forEach(function(t){
+    h += '<div class="pdf-tool-block"><div class="pdf-tool-title">'+t.title+'</div>';
+    h += '<div class="pdf-tool-sub">რა არის</div><div class="pdf-tool-text">'+t.what+'</div>';
+    h += '<div class="pdf-tool-sub">თეორიული საფუძველი</div><div class="pdf-tool-text">'+t.theory+'</div>';
+    h += '<div class="pdf-tool-sub">როდის გამოვიყენო</div><div class="pdf-tool-text">'+t.when+'</div>';
+    h += '<div class="pdf-tool-sub">როგორ გამოვიყენო</div>';
+    t.how.forEach(function(s,i){ h += '<div class="pdf-tool-text">'+(i+1)+'. '+s+'</div>'; });
+    h += '<div class="pdf-tool-sub">მაგალითი</div><div class="pdf-tool-text">'+t.example+'</div>';
+    h += '<div class="pdf-tool-sub">ხშირი შეცდომა</div><div class="pdf-tool-text">'+t.mistake+'</div>';
+    h += '</div>';
+  });
+  p1.innerHTML = h;
+
+  var h2 = '<h1 style="font-size:22px;">ჩემი თვითრეფლექსია</h1>';
+  h2 += '<div class="pdf-sub">'+formatDateGeorgian()+'</div>';
+
+  h2 += '<h3>თვითშეფასების შედეგი</h3>';
+  var avgs = allCompetencyAvgs();
+  QUAD_ORDER.forEach(function(k){
+    var v = avgs[k];
+    var pct = v ? (v/5*100) : 0;
+    h2 += '<div class="pdf-bar-row"><div style="font-size:12px;font-weight:bold;color:'+QUAD[k].color+'">'+QUAD[k].label+(v?(" — "+v.toFixed(1)+"/5"):"")+'</div>'+
+      '<div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:'+pct+'%;background:'+QUAD[k].color+'"></div></div></div>';
+  });
+  var sg = strongAndGrowth();
+  if(sg.strong.length){
+    h2 += '<div class="pdf-text" style="margin-top:6px;"><b>ძლიერი მხარე:</b> '+sg.strong.map(function(k){return QUAD[k].label;}).join(", ")+'</div>';
+    h2 += '<div class="pdf-text"><b>განვითარების ზონა:</b> '+sg.growth.map(function(k){return QUAD[k].label;}).join(", ")+'</div>';
+  }
+
+  collectAnswers().forEach(function(sec){
+    h2 += '<h3>'+sec.title+'</h3>';
+    sec.items.forEach(function(it){
+      if(!it.a) return;
+      h2 += '<div class="pdf-qa"><div class="q">'+escapeHtml(it.q)+'</div><div>'+escapeHtml(it.a)+'</div></div>';
+    });
+  });
+
+  h2 += '<h3>ჩემი ერთი ნაბიჯი</h3>';
+  var stepParts = [];
+  if(state.p6.change) stepParts.push(trimEndPunct(state.p6.change));
+  if(state.p6.situation) stepParts.push(trimEndPunct(state.p6.situation));
+  h2 += '<div class="pdf-text">'+(stepParts.length?(escapeHtml(stepParts.join(" — "))+"."):"—")+(state.p6.tool?(" ["+escapeHtml(state.p6.tool)+"]"):"")+'</div>';
+
+  p2.innerHTML = h2;
+}
+
+function renderCanvasToPdf(pdf, canvas, isFirstOverall){
+  var pdfWidthMM = 210, pageHeightMM = 297;
+  var pxPerMM = canvas.width / pdfWidthMM;
+  var pageHeightPx = Math.floor(pageHeightMM * pxPerMM);
+  var totalPages = Math.max(1, Math.ceil(canvas.height / pageHeightPx));
+  for(var i=0;i<totalPages;i++){
+    var sliceHeightPx = Math.min(pageHeightPx, canvas.height - i*pageHeightPx);
+    var sliceCanvas = document.createElement("canvas");
+    sliceCanvas.width = canvas.width;
+    sliceCanvas.height = sliceHeightPx;
+    var ctx = sliceCanvas.getContext("2d");
+    ctx.drawImage(canvas, 0, i*pageHeightPx, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+    var sliceData = sliceCanvas.toDataURL("image/png");
+    var sliceHeightMM = sliceHeightPx / pxPerMM;
+    if(!(isFirstOverall && i===0)) pdf.addPage();
+    pdf.addImage(sliceData, "PNG", 0, 0, pdfWidthMM, sliceHeightMM);
+  }
+}
+
+function downloadPdf(){
+  if(!pdfLibsReady()){ showToast("ვერ შეიქმნა — სცადეთ სქრინშოთი."); return; }
+  try{
+    buildPdfPages();
+    var jsPDF = window.jspdf.jsPDF;
+    var pdf = new jsPDF("p","mm","a4");
+    var pages = [qs("#pdfPage1"), qs("#pdfPage2")];
+    var chain = Promise.resolve();
+    pages.forEach(function(pageEl, idx){
+      chain = chain.then(function(){
+        return window.html2canvas(pageEl, {scale:2, backgroundColor:"#ffffff"});
+      }).then(function(canvas){
+        renderCanvasToPdf(pdf, canvas, idx===0);
+      });
+    });
+    chain.then(function(){
+      pdf.save("chemi-mogzaurobis-zhurnali.pdf");
+      showToast("PDF შენახულია.");
+    }).catch(function(){
+      showToast("ვერ შეინახა — სცადეთ სქრინშოთი.");
+    });
+  }catch(e){
+    showToast("ვერ შეინახა — სცადეთ სქრინშოთი.");
+  }
+}
+
+/* ---------- init ---------- */
+render();
+
+})();
+</script>
+</body>
+</html>
