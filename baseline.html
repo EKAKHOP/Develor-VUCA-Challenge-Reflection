@@ -226,6 +226,14 @@
     border:2px dashed var(--grey);border-radius:var(--radius);padding:22px 16px;
     text-align:center;color:#888;font-size:13px;margin-bottom:16px;background:var(--grey-light);line-height:1.5;
   }
+  .competency-table{border:2px solid var(--grey-light);border-radius:var(--radius);margin-bottom:18px;overflow:hidden;}
+  .competency-table .ct-row{display:flex;gap:14px;padding:14px 16px;border-bottom:1px solid var(--grey-light);align-items:flex-start;}
+  .competency-table .ct-row:last-child{border-bottom:none;}
+  .competency-table .ct-label{flex:0 0 108px;}
+  .competency-table .ct-label .en{display:block;font-size:13px;font-weight:bold;letter-spacing:.5px;}
+  .competency-table .ct-label .ka{display:block;font-size:12px;opacity:.85;margin-top:1px;}
+  .competency-table .ct-title{font-size:14px;font-weight:bold;color:var(--ink);margin-bottom:3px;}
+  .competency-table .ct-desc{font-size:13px;color:#555;line-height:1.4;}
   .tool-detail h2{color:var(--purple);font-size:20px;margin:4px 0 14px;}
   .tool-section-label{font-size:13px;font-weight:bold;color:var(--purple);margin:16px 0 6px;letter-spacing:.3px;}
   .tool-body-text{font-size:15px;line-height:1.6;color:var(--ink);}
@@ -742,13 +750,20 @@ function screenReflectPart(step){
 function screenSelfAssessment(){
   var out = '<h1 class="screen-title mtavruli">'+U("თვითშეფასება")+'</h1>';
   out += '<p class="hint">გაიხსენეთ, როგორ მოქმედებდით თამაშის დროს. შეაფასეთ თითოეული დებულება 1-დან 5-მდე: 1 = თითქმის არასდროს, 5 = თითქმის ყოველთვის. სწორი და არასწორი პასუხი არ არსებობს.</p>';
-  out += '<div class="diagram-placeholder">📋 VUCA Prime ნავიგატორის სქემა (V/U/C/A წრე) და სლაიდი „რა კომპეტენციები გვჭირდება VUCA სამყაროში?“ ამ ეტაპზე მიუწვდომელია — იხილეთ ტექსტი ქვემოთ</div>';
+  out += '<div class="competency-table">';
+  QUAD_ORDER.forEach(function(key){
+    var q = QUAD[key];
+    out += '<div class="ct-row">';
+    out += '<div class="ct-label" style="color:'+q.color+'"><span class="en">'+key.toUpperCase()+'</span><span class="ka mtavruli">'+U(q.label)+'</span></div>';
+    out += '<div class="ct-content"><div class="ct-title">'+q.sub+'</div><div class="ct-desc">'+q.desc+'</div></div>';
+    out += '</div>';
+  });
+  out += '</div>';
 
   QUAD_ORDER.forEach(function(key){
     var q = QUAD[key];
     out += '<div class="competency-block">';
     out += '<div class="competency-head mtavruli" style="color:'+q.color+'">'+U(q.label)+' ('+U(q.sub)+')</div>';
-    out += '<div class="competency-desc">'+q.desc+'</div>';
     STATEMENTS.filter(function(s){return s.key===key;}).forEach(function(s){
       out += '<div class="statement-text">'+s.n+'. '+s.text+'</div>';
       out += '<div class="scale-row">';
