@@ -234,6 +234,11 @@
   .competency-table .ct-label .ka{display:block;font-size:12px;opacity:.85;margin-top:1px;}
   .competency-table .ct-title{font-size:14px;font-weight:bold;color:var(--ink);margin-bottom:3px;}
   .competency-table .ct-desc{font-size:13px;color:#555;line-height:1.4;}
+  .card-icon-row{display:flex;align-items:center;gap:12px;}
+  .tool-icon-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;flex:none;}
+  .tool-icon-circle svg{display:block;}
+  .tool-detail-head{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+  .tool-detail-head h2{margin:0;}
   .tool-detail h2{color:var(--purple);font-size:20px;margin:4px 0 14px;}
   .tool-section-label{font-size:13px;font-weight:bold;color:var(--purple);margin:16px 0 6px;letter-spacing:.3px;}
   .tool-body-text{font-size:15px;line-height:1.6;color:var(--ink);}
@@ -367,6 +372,7 @@ var TOOL_ICONS = {
   5:'<svg viewBox="0 0 24 24" width="17" height="17" '+SVG_ICON_ATTRS+'><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
   6:'<svg viewBox="0 0 24 24" width="17" height="17" '+SVG_ICON_ATTRS+'><path d="M4 5h16v10H9l-4 3v-3H4z"/><path d="M9 9.5l1.8 1.8L15 7.5"/></svg>'
 };
+var TOOL_COLORS = {1:"#7f5290",2:"#8dc63f",3:"#f26522",4:"#4e3161",5:"#8dc63f",6:"#f26522"};
 
 var STATEMENTS = [
   {n:1, key:"vision", text:"აქტიურად ვმონაწილეობდი მომავლის მკაფიო სურათის შექმნაში."},
@@ -781,8 +787,7 @@ function screenSelfAssessment(){
 
 /* ---------- PART 1 ---------- */
 function screenPart1(){
-  var out = '<h1 class="screen-title mtavruli">'+U("ნაწილი 1. რა მოხდა?")+'</h1>';
-  out += qBlock("p1.q1", "რა მოხდა თამაშის დროს? აღწერეთ მოკლედ, თქვენი სიტყვებით.", state.p1.q1);
+  var out = '<h1 class="screen-title mtavruli">'+U("ნაწილი 1. რა მოხდა VUCA გამოწვევის დროს?")+'</h1>';
   out += qBlock("p1.q2", "რომელი მომენტი გახსენდებათ ყველაზე მკაფიოდ?", state.p1.q2);
   out += qBlock("p1.q3", "რომელი მომენტი იყო თქვენთვის ყველაზე რთული?", state.p1.q3);
   out += qBlock("p1.q4", "რომელი მომენტი იყო ყველაზე წარმატებული?", state.p1.q4);
@@ -922,10 +927,10 @@ function screenSummary(){
 /* ---------- TOOLS GUIDE ---------- */
 function screenToolsList(){
   var out = '<h1 class="screen-title mtavruli">'+U("ინსტრუმენტების სახელმძღვანელო")+'</h1>';
-  out += '<div class="diagram-placeholder">📋 ინსტრუმენტების შემაჯამებელი სლაიდი ამ ეტაპზე მიუწვდომელია — იხილეთ სია ქვემოთ</div>';
   TOOLS.forEach(function(t){
     out += '<button class="card" data-toolcard="'+t.id+'">'+
-      '<span><span class="card-title mtavruli">'+U(t.title)+'</span></span></button>';
+      '<span class="card-icon-row"><span class="tool-icon-circle" style="background:'+TOOL_COLORS[t.id]+'">'+TOOL_ICONS[t.id]+'</span>'+
+      '<span class="card-title mtavruli">'+U(t.title)+'</span></span></button>';
   });
   return out;
 }
@@ -933,8 +938,7 @@ function screenToolCard(id){
   var t = TOOLS.filter(function(x){return x.id===id;})[0];
   if(!t) return "";
   var out = '<div class="tool-detail">';
-  out += '<div class="diagram-placeholder">📋 „'+t.title+'“ სქემა ამ ეტაპზე მიუწვდომელია — იხილეთ ტექსტი ქვემოთ</div>';
-  out += '<h2 class="mtavruli">'+U(t.title)+'</h2>';
+  out += '<div class="tool-detail-head"><span class="tool-icon-circle" style="background:'+TOOL_COLORS[t.id]+'">'+TOOL_ICONS[t.id]+'</span><h2 class="mtavruli">'+U(t.title)+'</h2></div>';
   out += '<div class="tool-section-label mtavruli">'+U("რა არის")+'</div><div class="tool-body-text">'+t.what+'</div>';
   out += '<details class="theory-details"><summary class="mtavruli">'+U("თეორიული საფუძველი")+'</summary><div class="tool-body-text">'+t.theory+'</div></details>';
   out += '<div class="tool-section-label mtavruli">'+U("როდის გამოვიყენო")+'</div><div class="tool-body-text">'+t.when+'</div>';
@@ -1067,8 +1071,7 @@ function showToast(msg){
 /* ---------- answer collection (summary + pdf) ---------- */
 function collectAnswers(){
   return [
-    {title:"ნაწილი 1: რა მოხდა?", items:[
-      {q:"რა მოხდა თამაშის დროს?", a:state.p1.q1},
+    {title:"ნაწილი 1: რა მოხდა VUCA გამოწვევის დროს?", items:[
       {q:"ყველაზე მკაფიო მომენტი", a:state.p1.q2},
       {q:"ყველაზე რთული მომენტი", a:state.p1.q3},
       {q:"ყველაზე წარმატებული მომენტი", a:state.p1.q4}
